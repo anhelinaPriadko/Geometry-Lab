@@ -4,11 +4,13 @@
 #include <algorithm>
 #include <fstream>
 #include <random>
+#include <limits>
 
 struct Point {
     double x, y;
 };
 
+// --- Геометричні операції ---
 Point operator-(Point a, Point b) { return {a.x - b.x, a.y - b.y}; }
 double cross_product(Point a, Point b) { return a.x * b.y - a.y * b.x; }
 double length(Point a) { return std::sqrt(a.x * a.x + a.y * a.y); }
@@ -33,8 +35,9 @@ Point intersect(Point a, Point b, Point c, Point d) {
     return {(b2 * c1 - b1 * c2) / det, (a1 * c2 - a2 * c1) / det};
 }
 
+// Алгоритм Сазерленда-Ходжмана для пошуку ядра
 std::vector<Point> findKernel(const std::vector<Point>& star) {
-    std::vector<Point> kernel = {{0,0}, {500,0}, {500,500}, {0,500}}; // Початкове робоче поле
+    std::vector<Point> kernel = {{0,0}, {500,0}, {500,500}, {0,500}};
     for (size_t i = 0; i < star.size(); ++i) {
         Point a = star[i];
         Point b = star[(i + 1) % star.size()];
@@ -77,14 +80,22 @@ std::vector<Point> generateRandomStar(int n, Point center, double maxR) {
 }
 
 int main() {
-    int N = 12; // Кількість променів
+    int N;
+    const int DEFAULT_N = 12;
+
+    std::cout << "Введіть кількість вершин для зірки: ";
+    if (!(std::cin >> N) || N < 3) {
+        std::cout << "Помилка вводу або замало вершин (мінімум 3). Використовую значення за замовчуванням: " << DEFAULT_N << std::endl;
+        // Очищення потоку вводу, якщо введено "сміття"
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        N = DEFAULT_N;
+    }
+
     Point canvasCenter = {250, 250};
     std::vector<Point> star = generateRandomStar(N, canvasCenter, 200);
-
-    // 2. ЗНАХОДИМО ЯДРО
     std::vector<Point> kernel = findKernel(star);
 
-    // 3. ПОШУК ЦЕНТРУ КОЛА (сіткою всередині ядра)
     Point bestCenter = canvasCenter;
     double maxRadius = 0;
 
@@ -95,7 +106,7 @@ int main() {
             minY = std::min(minY, p.y); maxY = std::max(maxY, p.y);
         }
 
-        int steps = 100; 
+        int steps = 120; // Трохи збільшена точність сітки
         for (int i = 0; i <= steps; ++i) {
             for (int j = 0; j <= steps; ++j) {
                 Point cand = {minX + i*(maxX-minX)/steps, minY + j*(maxY-minY)/steps};
@@ -121,31 +132,34 @@ int main() {
         }
     }
 
-    // 4. SVG ВИВІД
+    // --- SVG ВИВІД (Охайне оформлення) ---
     std::ofstream out("star_circle.svg");
     out << "<svg width='500' height='500' xmlns='http://www.w3.org/2000/svg'>\n";
-    out << "<rect width='100%' height='100%' fill='#ffffff' />\n";
+    out << "<rect width='100%' height='100%' fill='#fdfdfd' />\n";
     
-    // Малюємо зірку
+    // Тонша лінія для зірки (0.5px)
     out << "<polygon points='";
     for(auto p : star) out << p.x << "," << p.y << " ";
-    out << "' fill='#eeeeee' stroke='#888' stroke-width='1' />\n";
+    out << "' fill='#f0f0f0' stroke='#999' stroke-width='0.2' />\n";
 
-    // Малюємо ядро (напівпрозоре зелене)
+    // Ядро (дуже делікатне)
     if(!kernel.empty()) {
         out << "<polygon points='";
         for(auto p : kernel) out << p.x << "," << p.y << " ";
-        out << "' fill='rgba(0, 255, 0, 0.2)' />\n";
+        out << "' fill='rgba(76, 175, 80, 0.15)' />\n";
     }
 
-    // Малюємо коло
+    // Коло (товщина 0.8px, щоб не «зливалося» з краями)
     if (maxRadius > 0) {
-        out << "<circle cx='" << bestCenter.x << "' cy='" << bestCenter.y << "' r='" << maxRadius << "' stroke='red' fill='none' stroke-width='2' />\n";
-        out << "<circle cx='" << bestCenter.x << "' cy='" << bestCenter.y << "' r='3' fill='red' />\n";
+        out << "<circle cx='" << bestCenter.x << "' cy='" << bestCenter.y << "' r='" << maxRadius << "' stroke='#d32f2f' fill='none' stroke-width='0.2' />\n";
+        out << "<circle cx='" << bestCenter.x << "' cy='" << bestCenter.y << "' r='1.5' fill='#d32f2f' />\n";
     }
+    
     out << "</svg>";
     out.close();
 
-    std::cout << "SVG створено. Радіус кола: " << maxRadius << std::endl;
+    std::cout << "Готово! SVG файл 'star_circle.svg' оновлено." << std::endl;
+    std::cout << "Кількість вершин: " << N << ", Радіус кола: " << maxRadius << std::endl;
+
     return 0;
 }

@@ -1,0 +1,6 @@
+solution
+program
+*.o
+*.out
+
+*.svg
