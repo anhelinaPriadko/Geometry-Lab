@@ -1,0 +1,7 @@
+<svg width='500' height='500' xmlns='http://www.w3.org/2000/svg'>
+<rect width='100%' height='100%' fill='#f0f0f0' />
+<polygon points='200,100 250,220 380,220 280,300 320,420 200,340 80,420 120,300 20,220 150,220 ' fill='#d0d0d0' stroke='black' stroke-width='0.5' />
+<polygon points='266.667,260 276.364,289.091 200,340 123.636,289.091 133.333,260 150,220 250,220 ' fill='rgba(0, 255, 0, 0.4)' stroke='green' stroke-width='0.5' />
+<circle cx='200' cy='268.533' r='69.6813' stroke='red' fill='none' stroke-width='0.5' />
+<circle cx='200' cy='268.533' r='2' fill='red' />
+</svg>
