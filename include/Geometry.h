@@ -11,5 +11,6 @@ Point subtract(Point a, Point b);
 double crossProduct(Point a, Point b);
 double length(Point a);
 double distToSegment(Point p, Point a, Point b);
-
+Point intersect(Point a, Point b, Point c, Point d);
+bool isLeft(Point p, Point a, Point b);
 #endif
