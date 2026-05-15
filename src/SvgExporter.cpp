@@ -21,7 +21,7 @@ void saveSvg(const std::string& filename,
 
     if (circle.radius > 0) {
         out << "<circle cx='" << circle.center.x << "' cy='" << circle.center.y << "' r='" << circle.radius << "' stroke='#d32f2f' fill='none' stroke-width='0.2' />\n";
-        out << "<circle cx='" << circle.center.x << "' cy='" << circle.center.y << "' r='1.5' fill='#d32f2f' />\n";
+        out << "<circle cx='" << circle.center.x << "' cy='" << circle.center.y << "' r='0.5' fill='#d32f2f' />\n";
     }
     
     out << "</svg>";
